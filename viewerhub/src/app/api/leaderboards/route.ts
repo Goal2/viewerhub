@@ -1,15 +1,31 @@
-// src/app/api/leaderboards/route.ts
-import { NextResponse } from "next/server";
-import { mockLeaderboards, delay } from "@/lib/mock";
+import { NextRequest } from "next/server";
 
-export async function GET(req: Request) {
-  const url = new URL(req.url);
-  const useMock = url.searchParams.has("mock") || process.env.DEMO === "1";
+type Item = { name: string; value: number };
+type Lb = { topChatters: Item[]; topDonors: Item[]; topSubs: Item[] };
 
-  if (useMock) {
-    await delay(250);
-    return NextResponse.json(mockLeaderboards);
-  }
+export const runtime = "edge";
 
-  return new NextResponse("Unauthorized", { status: 401 });
+const MOCK_LB: Lb = {
+  topChatters: [
+    { name: "alpha", value: 1243 },
+    { name: "beta", value: 996 },
+    { name: "gamma", value: 842 },
+    { name: "delta", value: 701 },
+    { name: "epona", value: 560 },
+    { name: "mika", value: 420 },
+  ],
+  topDonors: [
+    { name: "superfan", value: 180 },
+    { name: "natsu", value: 120 },
+    { name: "sora", value: 95 },
+  ],
+  topSubs: [
+    { name: "neo", value: 36 },
+    { name: "jin", value: 20 },
+    { name: "ayan", value: 14 },
+  ],
+};
+
+export async function GET(_req: NextRequest) {
+  return Response.json(MOCK_LB);
 }
