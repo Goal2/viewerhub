@@ -1,31 +1,46 @@
 "use client";
+
 import {
-  ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid,
+  ResponsiveContainer,
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  Tooltip,
 } from "recharts";
+
+type Point = { date: string; messages: number };
 
 export default function MiniTrend({
   data,
   height = 160,
-  title = "Activité du chat (14 j)",
 }: {
-  data: Array<{ date: string; messages: number }>;
+  data: Point[];
   height?: number;
-  title?: string;
 }) {
-  const formatted = (data ?? []).map(d => ({ ...d, d: d.date.slice(5) })); // MM-DD
-
   return (
     <div className="rounded-2xl bg-white/5 border border-white/10 p-4">
-      <div className="font-semibold mb-2">{title}</div>
-      <div style={{ height }}>
-        <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={formatted} margin={{ top: 10, right: 16, bottom: 0, left: 0 }}>
-            <CartesianGrid vertical={false} stroke="rgba(255,255,255,.08)" />
-            <XAxis dataKey="d" stroke="rgba(255,255,255,.5)" tickLine={false} fontSize={12} />
-            <YAxis stroke="rgba(255,255,255,.5)" tickLine={false} fontSize={12} allowDecimals={false} />
-            <Tooltip contentStyle={{ background: "#1b1b21", border: "1px solid rgba(255,255,255,.12)" }} />
-            <Line type="monotone" dataKey="messages" stroke="#9146ff" strokeWidth={2} dot={{ r: 2 }} activeDot={{ r: 4 }} />
-          </LineChart>
+      <div className="font-semibold mb-2">Messages / 14 jours</div>
+      <div style={{ width: "100%", height }}>
+        <ResponsiveContainer>
+          <AreaChart data={data}>
+            <defs>
+              <linearGradient id="g1" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#22d3ee" stopOpacity={0.6} />
+                <stop offset="100%" stopColor="#22d3ee" stopOpacity={0} />
+              </linearGradient>
+            </defs>
+            <XAxis dataKey="date" tick={{ fontSize: 10 }} hide />
+            <YAxis tick={{ fontSize: 10 }} hide />
+            <Tooltip />
+            <Area
+              type="monotone"
+              dataKey="messages"
+              stroke="#22d3ee"
+              fill="url(#g1)"
+              strokeWidth={2}
+            />
+          </AreaChart>
         </ResponsiveContainer>
       </div>
     </div>
